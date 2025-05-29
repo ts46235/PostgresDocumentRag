@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.Extensions.Configuration;
 using RagAi;
 using RagAi.Services;
 
@@ -6,6 +7,12 @@ await RunAsync();
 
 async Task RunAsync()
 {
+    var config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: true)
+            .AddUserSecrets<Program>()
+            .Build();
+
     //IMemoryStore implementation
     // EmbeddingsService.BuildKernel();
     // await SqlHelper.DeleteEmbeddings();
@@ -14,8 +21,8 @@ async Task RunAsync()
     // IVectorStore Implementation
     DbHelper.CreateResumeTableIfNotExists();
     await DbHelper.DeleteResumeEmbeddings();
-    await VectorService.BuildKernel();
-    await VectorService.ImportResumes("~/Downloads/Resumes");
+    await VectorService.BuildKernel(config);
+    await VectorService.ImportResumes("Assets/Resumes");
     
     while (true)
     {
@@ -35,10 +42,10 @@ async Task RunAsync()
         await VectorService.GetResponseAsync(query);
     }
     
-//Show Person's name, relevance and up to a 10 word snippet from each resume that has the word nurse in them
-//Show Person's name and up to a 10 word snippet from each resumes of people who have a certificate
-//Show Person's name and short description and up to a 10 word snippet from each resumes of people who have worked in the auto industry
-//Show Person's name and short description and up to 10 words in context of those who have worked in the auto industry
+//Show Persons name, relevance and up to a 10 word snippet from each resume that has the word nurse in them
+//Show Persons name and up to ten words from each resumes of people who have a certificate
+//Show Persons name and short description and up to a 10 word snippet from each resumes of people who have worked in the auto industry
+//Show Persons name and short description and up to 10 words in context of those who have worked in the auto industry
 //Show a description and up to a 10 word snippet from each resumes of people who can speak spanish
 
     

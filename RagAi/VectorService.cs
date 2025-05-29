@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.VectorData;
 using Microsoft.SemanticKernel;
@@ -19,7 +20,9 @@ public class VectorService
     
     public static async Task ImportResumes(string pdfDirectory)
     {
-        string absolutePath = Path.GetFullPath(pdfDirectory.Replace("~", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)));
+        // used when on mac with dir inside my local user account: string absolutePath = Path.GetFullPath(pdfDirectory.Replace("~", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)));
+        string projectRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\.."));
+        string absolutePath = Path.Combine(projectRoot, pdfDirectory);
         foreach (var path in Directory.GetFiles(absolutePath, "*.pdf"))
         {
             string fileName = Path.GetFileName(path);
@@ -172,24 +175,28 @@ public class VectorService
         }
     }
 
-    public static async Task BuildKernel()
+    public static async Task BuildKernel(Microsoft.Extensions.Configuration.IConfigurationRoot config)
     {
         if (_kernel != null)
         {
             return;
         }
-        
+
+        string connString = config["AI_Connection_String"].ToString();
+        string key = config["AI_Key"].ToString();
+        string modelName = config["ModelName"].ToString();
+
         var builder = Kernel.CreateBuilder();
 
         builder.AddAzureOpenAITextEmbeddingGeneration(
-            "text-embedding-ada-002",
-            "<your azure openAi-endpoint>",
-            "<your apikey>");
+            modelName, // app is compatible with text-embedding-ada-002 but use the "name" of the model
+            connString,
+            key);
 
         builder.AddAzureOpenAIChatCompletion(
             "gpt-4",
-            "<your azure openAi-endpoint>",
-            "<your apikey>");
+            connString,
+            key);
 
         //builder.Services.AddSingleton<IVectorStore>(_ => vectorStore);
         builder.Services.AddPostgresVectorStore(SqlHelper.ConnectionString);
