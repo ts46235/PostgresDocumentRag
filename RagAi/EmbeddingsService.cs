@@ -106,9 +106,6 @@ public class EmbeddingsService
             "<your azure openAi-endpoint>",
             "<your apikey>");
 
-        // Register custom PostgreSQL memory store
-        builder.Services.AddSingleton<IMemoryStore>(_ => new PostgresMemoryStore(SqlHelper.ConnectionString));
-        
         builder.Services.AddSingleton<ISemanticTextMemory>(sp =>
             new SemanticTextMemory(
                 sp.GetRequiredService<IMemoryStore>(), 

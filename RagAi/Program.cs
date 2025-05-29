@@ -13,12 +13,6 @@ async Task RunAsync()
             .AddUserSecrets<Program>()
             .Build();
 
-    //IMemoryStore implementation
-    // EmbeddingsService.BuildKernel();
-    // await SqlHelper.DeleteEmbeddings();
-    // await EmbeddingsService.ProcessDocuments("~/Downloads/Resumes");
-
-    // IVectorStore Implementation
     DbHelper.CreateResumeTableIfNotExists();
     await DbHelper.DeleteResumeEmbeddings();
     await VectorService.BuildKernel(config);
@@ -38,7 +32,6 @@ async Task RunAsync()
         
         // Process the search query
         Console.WriteLine("Searching...\n");
-        //await EmbeddingsService.QueryMemory(query);
         await VectorService.GetResponseAsync(query);
     }
     

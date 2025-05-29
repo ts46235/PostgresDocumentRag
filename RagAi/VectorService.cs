@@ -1,12 +1,8 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.VectorData;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
-using Microsoft.SemanticKernel.Connectors.Postgres;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Text;
-using Npgsql;
 using RagAi.Models;
 using RagAi.Services;
 
@@ -41,13 +37,6 @@ public class VectorService
             for (int i = 0; i < chunks.Count; i++)
             {
                 await GenerateEmbeddingsAndUpsertAsync(fileName, chunks[i]);
-                // await memory.SaveInformationAsync(
-                //     collection: "resumes",
-                //     id: Guid.NewGuid().ToString(), // TODO: needs to come from hash of user identity
-                //     text: chunks[i],
-                //     description: $"From {fileName}, chunk {i+1}/{chunks.Count}",
-                //     additionalMetadata: $"{{ \"fileName\": \"{fileName}\" }}");
-
                 Console.WriteLine($"Processed chunk {i+1}/{chunks.Count}");
             }
         }
@@ -198,20 +187,11 @@ public class VectorService
             connString,
             key);
 
-        //builder.Services.AddSingleton<IVectorStore>(_ => vectorStore);
-        builder.Services.AddPostgresVectorStore(SqlHelper.ConnectionString);
+        builder.Services.AddPostgresVectorStore(DbHelper.ConnectionString);
 
         _kernel = builder.Build();
         _resumeCollection = _kernel!.GetRequiredService<IVectorStore>().GetCollection<long, Resume>("resumes");
         await _resumeCollection.CreateCollectionIfNotExistsAsync();
-        
-        // builder.Services.AddVectorStoreTextSearch();
-        // var textSearch = _kernel!.GetRequiredService<ITextSearchService>();
-        // var searchResults = await textSearch.SearchAsync(
-        //     "resumes",
-        //     userQuery,
-        //     minRelevanceScore: 0.7,
-        //     limit: 5);
     }
 
     private static double CosineSimilarity(ReadOnlyMemory<float> vectorA, ReadOnlyMemory<float> vectorB)
