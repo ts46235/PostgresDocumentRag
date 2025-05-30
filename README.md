@@ -11,8 +11,9 @@ Create *rag* database (CreateDatabaseIfNotExists wasn't working)
 ```bash	
 # shell into container's psql
 $ docker exec -it postgres-17 ./bin/psql -U postgres
-postgres=# create database rag;
-postgres=# CREATE EXTENSION IF NOT EXISTS vector;
+postgres=\# create database rag;
+postgres=\# \c rag; #switches to rag db
+postgres=\# CREATE EXTENSION IF NOT EXISTS vector;
 ```
 DB connection is set up to hit localhost already
 
