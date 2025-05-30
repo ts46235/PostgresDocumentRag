@@ -19,3 +19,14 @@ DB connection is set up to hit localhost already
 Add your 3 Secrets' value to the secrets file that match appsettings.json
 
 Hit F5 to run
+
+During program execution, it will:
+- Loop thru the resume folder to find each file
+- Chunk file into embeddings and store in postgres DB, resume table
+- Show a chat interface with which to ask questions to
+- Upon each question asked it will:
+  - Use an LLM to extract just the actual search portion of the question, minus any instructions
+  - Do a similarity vector search against the Postgres DB
+  - Inject these results into pre-formed prompt template along with the original question
+  - Issue the prompt to LLM
+  - Render the response in the chat client
