@@ -21,8 +21,10 @@ Add your 3 Secrets' value to the secrets file that match appsettings.json
 Hit F5 to run
 
 During program execution, it will:
+- Create Table if it doesnt exist
+- Clear out all the table rows
 - Loop thru the resume folder to find each file
-- Chunk file into embeddings and store in postgres DB, resume table
+- Chunk file into embeddings and store each in a separate row in resume table
 - Show a chat interface with which to ask questions to
 - Upon each question asked it will:
   - Use an LLM to extract just the actual search portion of the question, minus any instructions
