@@ -9,7 +9,7 @@ docker run --rm --name postgres-17 -p 127.0.0.1:5012:5432 -e POSTGRES_PASSWORD=p
 ```
 Create *rag* database (CreateDatabaseIfNotExists wasn't working)
 ```bash	
-# shell into container's psql
+# execute psql in a shell in container
 $ docker exec -it postgres-17 ./bin/psql -U postgres
 postgres=\# create database rag;
 postgres=\# \c rag; #switches to rag db
